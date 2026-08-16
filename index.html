@@ -565,8 +565,18 @@ function processBatchImport() {
         return;
     }
 
-    let appendMode = confirm("👉 點擊【確定】將這些單字【累加】到現有字庫中\n👉 點擊【取消】將【完全覆蓋】現有字庫");
-    let newWords = appendMode ? [...masterDatabase] : [];
+    let appendMode = confirm("👉 點擊【確定】將這些單字【累加】到現有字庫中（系統將自動過濾重複單字）\n👉 點擊【取消】將【完全覆蓋】現有字庫");
+    
+    // 建立 Map 用於快速比對去重 (key: 英文小寫, value: 單字物件)
+    let wordMap = new Map();
+    if (appendMode) {
+        masterDatabase.forEach(item => {
+            if (item.en) wordMap.set(item.en.trim().toLowerCase(), item);
+        });
+    }
+
+    let addedCount = 0;
+    let duplicateCount = 0;
 
     const lines = text.split('\n');
     lines.forEach(line => {
@@ -575,7 +585,8 @@ function processBatchImport() {
 
         let en = (r[0] || '').trim();
         if (en && en !== '英文單字') {
-            newWords.push({
+            let key = en.toLowerCase();
+            let wordObj = {
                 en: en,
                 kk: (r[1] || '').trim(),
                 pos: (r[2] || '').trim(),
@@ -594,16 +605,24 @@ function processBatchImport() {
                 ex2: (r[15] || '').trim(),
                 ex2_zh: (r[16] || '').trim(),
                 syllables: en
-            });
+            };
+
+            if (wordMap.has(key)) {
+                wordMap.set(key, wordObj); // 更新為最新資料
+                duplicateCount++;
+            } else {
+                wordMap.set(key, wordObj); // 新增單字
+                addedCount++;
+            }
         }
     });
 
-    if (newWords.length > 0) {
-        masterDatabase = newWords;
+    if (wordMap.size > 0) {
+        masterDatabase = Array.from(wordMap.values());
         saveToStorage();
         document.getElementById('master-count').innerText = masterDatabase.length;
         onGradeFilterChange();
-        alert(`🎉 成功載入單字！字庫總計已達 ${masterDatabase.length} 字。`);
+        alert(`🎉 處理完成！\n✨ 新增單字：${addedCount} 字\n🔄 排除重複 / 更新：${duplicateCount} 字\n📚 目前全局字庫總計：${masterDatabase.length} 字`);
         switchTab('flashcard');
     } else {
         alert("❌ 解析失敗，請確認格式。");
