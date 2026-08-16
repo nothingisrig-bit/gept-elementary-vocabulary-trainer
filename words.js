@@ -1,5 +1,4 @@
-[
-  {
+window.RAW_GEPT_TEXT = `
 學期	英文單字	KK音標	詞性	中文釋義	英英釋義	字首	字根	字尾	同義字	類義字	相反字	字族派生	例句1	例句1中文	例句2	例句2中文
 國一上	a / an	[ə]	art.	一個；一種	Used before a singular countable noun.	無	an (古英語：單一)	無	one [wʌn] (一個)	article [ˈɑrtɪkl] (冠詞)	the [ði] (這/定冠詞)	one (同源數詞)	This is an English book.	這是一本英文書。	He is a junior high student.	他是一位國中生。
 國一上	about	[əˈbaʊt]	prep.	關於；大約	On the subject of; approximately.	a- (處於)	butan (古英語：在外部/圍繞)	無	regarding [rɪˈɡɑrdɪŋ] (關於)	around [əˈraʊnd] (大約)	exactly [ɪɡˈzæktlɪ] (精確地)	roundabout (adj. 迂迴的)	What is this book about?	這本書是關於什麼的？	It is about five o'clock.	大約五點鐘了。
@@ -2201,5 +2200,5 @@
 國一上	panda	[ˈpændə]	n.	大貓熊；熊貓	A large black-and-white bear-like mammal.	nigalya-ponya (吃竹子的小獸)	無	無	giant panda	bamboo eater	N/A	pandas	Giant pandas eat fresh green bamboo every single day.	可愛的大貓熊每天都要吃下大量新鮮脆綠的竹子。	Thousands of visitors queued to see the baby panda.	成千上萬的遊客在動物園大排長龍爭相一睹剛出生的熊貓寶寶。
 國一上	paper	[ˈpepɚ]	n.	紙張；試卷；文件	Material manufactured in thin sheets from wood pulp.	papyrus (紙莎草紙)	#NAME?	無	sheet	document	plastic	paperwork	Write your English answers neatly on the paper.	請在測驗紙上工整寫下你的英文答案。	Oliver needs a piece of blank paper for drawing.	Oliver 需要一張空白紙來畫畫。
 國一上	parent	[ˈpɛrənt]	n.	父親；母親；雙親之一	A father or mother of a person.	parere (生育/誕生)	#NAME?	無	father	mother	child	parental	Every parent cares deeply about their children.	每位父母都深深關心著自己的孩子。	Oliver introduced his parents to the English teacher.	Oliver 向英文老師介紹了他的父母親。
-]
-  }
+`;
+//
