@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全民英檢初級 (GEPT) 年級單字全方位特訓</title>
+    <style>
+        :root {
+            --primary: #1b4332;
+            --primary-light: #2d6a4f;
+            --accent: #ffb703;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2b2d42;
+            --correct-color: #2b9348;
+            --wrong-color: #d90429;
+            --keyboard-bg: #e9ecef;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, "Microsoft JhengHei";
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-light);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+        }
+
+        .global-status {
+            background-color: #e8f5e9;
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: inline-block;
+            margin-top: 5px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #eef5ee;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        select.grade-select {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 2px solid var(--primary-light);
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .audio-controls input[type=range] {
+            width: 90px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: #f1f3f5;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            background-color: #fff;
+            border: 2px solid var(--primary-light);
+            color: var(--primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .tab-btn.btn-import-tab {
+            border-color: #d97706;
+            color: #b45309;
+            background-color: #fef3c7;
+        }
+
+        .tab-btn.btn-import-tab.active, .tab-btn.btn-import-tab:hover {
+            background-color: #d97706;
+            color: #fff;
+        }
+
+        .main-card {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 320px;
+            box-sizing: border-box;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        .detail-item {
+            font-size: 0.92rem;
+            line-height: 1.4;
+        }
+
+        .detail-item strong {
+            color: var(--primary);
+        }
+
+        .ex-box {
+            grid-column: span 3;
+            background: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            margin-top: 4px;
+        }
+
+        .word-mask-display {
+            font-size: 2.2rem;
+            letter-spacing: 6px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+            text-align: center;
+            font-family: monospace;
+            min-height: 50px;
+        }
+
+        .keyboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            margin-top: 20px;
+            background: var(--keyboard-bg);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .kb-row {
+            display: flex;
+            gap: 5px;
+        }
+
+        .key-btn {
+            width: 38px;
+            height: 42px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #bbb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .key-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .key-btn.btn-del {
+            width: 65px;
+            background: #e63946;
+            color: white;
+            border-color: #d62828;
+        }
+
+        /* 句子選擇題 UI */
+        .sentence-quiz-box {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sentence-prompt {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-light);
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .sentence-blank-highlight {
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: underline;
+            text-underline-offset: 6px;
+        }
+
+        .sentence-zh-hint {
+            color: #64748b;
+            font-size: 1rem;
+            margin-top: 6px;
+        }
+
+        .mcq-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .mcq-opt-btn {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mcq-opt-btn:hover {
+            border-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .mcq-opt-btn.correct {
+            background-color: var(--correct-color) !important;
+            color: #fff !important;
+            border-color: var(--correct-color) !important;
+        }
+
+        .mcq-opt-btn.wrong {
+            background-color: var(--wrong-color) !important;
+            color: #fff !important;
+            border-color: var(--wrong-color) !important;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-hint { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .btn-next { background: var(--primary); color: #fff; }
+        .btn-export-excel { background: #107c41; color: #fff; border: 1px solid #0b5a2f; }
+        .btn-export-excel:hover { background: #0b5a2f; }
+
+        .table-wrapper {
+            max-height: 450px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .grade-badge {
+            background: #e0f2f1;
+            color: #004d40;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .tts-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--primary);
+        }
+
+        .import-box {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 2px dashed var(--primary-light);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.88rem;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .import-btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-success { background: var(--correct-color); color: #fff; }
+        .btn-danger { background: var(--wrong-color); color: #fff; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>全民英檢初級 (GEPT) 年級單字全方位特訓</h1>
+        <div class="global-status">
+            📚 全局字庫：<span id="master-count">0</span> 字 ｜ 🎯 當前學期 (<b><span id="current-range-name">全部學期</span></b>)：<span id="loaded-words-count">0</span> 字
+        </div>
+    </header>
+
+    <div class="control-panel">
+        <div class="control-group">
+            <label for="grade-filter">🎓 選擇學期：</label>
+            <select id="grade-filter" class="grade-select" onchange="onGradeFilterChange()">
+                <option value="ALL" selected>🌟 全部學期</option>
+                <option value="國一上">📌 國一上 (G7S1)</option>
+                <option value="國一下">📌 國一下 (G7S2)</option>
+                <option value="國二上">📌 國二上 (G8S1)</option>
+                <option value="國二下">📌 國二下 (G8S2)</option>
+                <option value="國三上">📌 國三上 (G9S1)</option>
+                <option value="國三下">📌 國三下 (G9S2)</option>
+            </select>
+        </div>
+
+        <div class="audio-controls">
+            <span>🔊 語速：</span>
+            <input type="range" id="speech-rate" min="0.5" max="1.5" step="0.05" value="0.85" onchange="updateRateLabel()">
+            <span id="rate-label">0.85x</span>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-btn-flashcard" onclick="switchTab('flashcard')">🎴 閃卡全方位說明</button>
+        <button class="tab-btn" id="tab-btn-gap-sentence" onclick="switchTab('gap-sentence')">🎯 單字填空 (句子選擇)</button>
+        <button class="tab-btn" id="tab-btn-gap-zh" onclick="switchTab('gap-zh')">✍️ 單字填空 (中文提示)</button>
+        <button class="tab-btn" id="tab-btn-gap-en" onclick="switchTab('gap-en')">📖 單字填空 (英英釋義)</button>
+        <button class="tab-btn" id="tab-btn-overview" onclick="switchTab('overview')">📋 單字總覽 (匯出Excel)</button>
+        <button class="tab-btn btn-import-tab" id="tab-btn-import" onclick="switchTab('import')">📥 批量貼入年級字庫</button>
+    </div>
+
+    <div class="main-card" id="card-content"></div>
+
+    <div class="action-bar" id="action-bar">
+        <button class="action-btn btn-hint" onclick="showHint()">💡 一鍵顯示答案 / 詳解</button>
+        <div>
+            <button class="action-btn" style="background:#6c757d; color:#fff;" onclick="prevCard()">⬅️ 上一題</button>
+            <button class="action-btn btn-next" onclick="nextCard()">➡️ 下一題</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let masterDatabase = [];
+let currentTab = 'flashcard';
+let currentIndex = 0;
+let filteredList = [];
+let currentInputLetters = [];
+let targetWord = "";
+let maskedIndices = [];
+let bestVoice = null;
+let currentSentenceOptions = [];
+
+function initVoiceEngine() {
+    if ('speechSynthesis' in window) {
+        let voices = window.speechSynthesis.getVoices();
+        bestVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Aria'))) 
+                  || voices.find(v => v.lang.startsWith('en')) || null;
+    }
+}
+
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = initVoiceEngine;
+    initVoiceEngine();
+}
+
+function updateRateLabel() {
+    const val = document.getElementById('speech-rate').value;
+    document.getElementById('rate-label').innerText = val + 'x';
+}
+
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = parseFloat(document.getElementById('speech-rate').value || 0.85);
+        if (bestVoice) msg.voice = bestVoice;
+        window.speechSynthesis.speak(msg);
+    }
+}
+
+function saveToStorage() {
+    try {
+        localStorage.setItem('GEPT_MASTER_DATA', JSON.stringify(masterDatabase));
+    } catch(e) {}
+}
+
+function loadFromStorage() {
+    try {
+        const saved = localStorage.getItem('GEPT_MASTER_DATA');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                masterDatabase = parsed;
+            }
+        }
+    } catch(e) {}
+}
+
+function onGradeFilterChange() {
+    const grade = document.getElementById('grade-filter').value;
+    const rangeNameElem = document.getElementById('current-range-name');
+
+    if (grade === 'ALL') {
+        filteredList = [...masterDatabase];
+        rangeNameElem.innerText = '全部學期';
+    } else {
+        filteredList = masterDatabase.filter(item => item.grade === grade);
+        rangeNameElem.innerText = grade;
+    }
+
+    currentIndex = 0;
+    document.getElementById('loaded-words-count').innerText = filteredList.length;
+    renderTab();
+}
+
+window.onload = function() {
+    loadFromStorage();
+    document.getElementById('master-count').innerText = masterDatabase.length;
+    onGradeFilterChange();
+};
+
+function switchTab(tabName) {
+    currentTab = tabName;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    const activeBtn = document.getElementById('tab-btn-' + tabName);
+    if(activeBtn) activeBtn.classList.add('active');
+    
+    currentIndex = 0;
+    const actionBar = document.getElementById('action-bar');
+    if (tabName === 'overview' || tabName === 'import') {
+        actionBar.style.display = 'none';
+    } else {
+        actionBar.style.display = 'flex';
+    }
+    renderTab();
+}
+
+function processBatchImport() {
+    const text = document.getElementById('import-textarea').value.trim();
+    if (!text) {
+        alert("⚠️ 請先在文字框中貼上單字內容！");
+        return;
+    }
+
+    let appendMode = confirm("👉 點擊【確定】將這些單字【累加】到現有字庫中\n👉 點擊【取消】將【完全覆蓋】現有字庫");
+    let newWords = appendMode ? [...masterDatabase] : [];
+
+    const lines = text.split('\n');
+    lines.forEach(line => {
+        let r = line.split('\t');
+        if (r.length < 2) r = line.split(',');
+
+        let en = (r[0] || '').trim();
+        if (en && en !== '英文單字') {
+            newWords.push({
+                en: en,
+                kk: (r[1] || '').trim(),
+                pos: (r[2] || '').trim(),
+                zh: (r[3] || '').trim(),
+                grade: (r[4] || '國一上').trim(),
+                def: (r[5] || '').trim(),
+                prefix: (r[6] || '無').trim(),
+                root: (r[7] || '無').trim(),
+                suffix: (r[8] || '無').trim(),
+                syn: (r[9] || '無').trim(),
+                rel: (r[10] || '無').trim(),
+                ant: (r[11] || '無').trim(),
+                family: (r[12] || '無').trim(),
+                ex1: (r[13] || '').trim(),
+                ex1_zh: (r[14] || '').trim(),
+                ex2: (r[15] || '').trim(),
+                ex2_zh: (r[16] || '').trim(),
+                syllables: en
+            });
+        }
+    });
+
+    if (newWords.length > 0) {
+        masterDatabase = newWords;
+        saveToStorage();
+        document.getElementById('master-count').innerText = masterDatabase.length;
+        onGradeFilterChange();
+        alert(`🎉 成功載入單字！字庫總計已達 ${masterDatabase.length} 字。`);
+        switchTab('flashcard');
+    } else {
+        alert("❌ 解析失敗，請確認格式。");
+    }
+}
+
+function clearAllVocab() {
+    if (confirm("⚠️ 確定要清空所有已儲存的單字嗎？")) {
+        masterDatabase = [];
+        localStorage.removeItem('GEPT_MASTER_DATA');
+        document.getElementById('master-count').innerText = 0;
+        onGradeFilterChange();
+        alert("🧹 已清空字庫。");
+    }
+}
+
+// 輸出為 Excel (CSV 格式，含 UTF-8 BOM 避免亂碼)
+function exportToExcel() {
+    if (filteredList.length === 0) {
+        alert("⚠️ 目前範圍內沒有單字可供匯出！");
+        return;
+    }
+
+    const grade = document.getElementById('grade-filter').value;
+    const filename = `GEPT_初級單字庫_${grade}_(${filteredList.length}字).csv`;
+
+    const headers = [
+        "學期", "英文單字", "KK音標", "詞性", "中文釋義", 
+        "英英釋義", "字首", "字根", "字尾", "同義字", 
+        "類義字", "相反字", "字族派生", "例句1", "例句1中文", "例句2", "例句2中文"
+    ];
+
+    let csvContent = "\uFEFF" + headers.join(",") + "\n";
+
+    filteredList.forEach(w => {
+        let row = [
+            `"${(w.grade || '').replace(/"/g, '""')}"`,
+            `"${(w.en || '').replace(/"/g, '""')}"`,
+            `"${(w.kk || '').replace(/"/g, '""')}"`,
+            `"${(w.pos || '').replace(/"/g, '""')}"`,
+            `"${(w.zh || '').replace(/"/g, '""')}"`,
+            `"${(w.def || '').replace(/"/g, '""')}"`,
+            `"${(w.prefix || '無').replace(/"/g, '""')}"`,
+            `"${(w.root || '無').replace(/"/g, '""')}"`,
+            `"${(w.suffix || '無').replace(/"/g, '""')}"`,
+            `"${(w.syn || '無').replace(/"/g, '""')}"`,
+            `"${(w.rel || '無').replace(/"/g, '""')}"`,
+            `"${(w.ant || '無').replace(/"/g, '""')}"`,
+            `"${(w.family || '無').replace(/"/g, '""')}"`,
+            `"${(w.ex1 || '').replace(/"/g, '""')}"`,
+            `"${(w.ex1_zh || '').replace(/"/g, '""')}"`,
+            `"${(w.ex2 || '').replace(/"/g, '""')}"`,
+            `"${(w.ex2_zh || '').replace(/"/g, '""')}"`
+        ];
+        csvContent += row.join(",") + "\n";
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function renderTab() {
+    const card = document.getElementById('card-content');
+    if (!card) return;
+
+    if (currentTab === 'import') {
+        card.innerHTML = `
+            <h3 style="margin-top:0; color:var(--primary);">📥 批量貼入年級字庫面板</h3>
+            <p style="font-size:0.88rem; color:#555; margin-bottom:8px;">
+                💡 <b>使用說明</b>：直接全選複製 17 欄位的 Tab 分隔單字表，貼入下方並點擊按鈕即可匯入（可按年級分批累加貼入）。
+            </p>
+            <textarea class="import-box" id="import-textarea" placeholder="請在此貼上單字表內容..."></textarea>
+            <div class="import-btn-group">
+                <button class="action-btn btn-danger" onclick="clearAllVocab()">🗑️ 清空所有字庫</button>
+                <button class="action-btn btn-success" onclick="processBatchImport()">🚀 一鍵智能載入字庫</button>
+            </div>
+        `;
+        return;
+    }
+
+    if (currentTab === 'overview') {
+        let sortedDb = [...filteredList].sort((a,b) => (a.grade || '').localeCompare(b.grade || ''));
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="margin:0; color:var(--primary);">📋 當前範圍單字總覽 (${filteredList.length} 字)</h3>
+                <button class="action-btn btn-export-excel" onclick="exportToExcel()">📊 一鍵輸出 Excel 試算表 (.csv)</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>學期</th>
+                            <th>英文單字</th>
+                            <th>音標/詞性</th>
+                            <th>中文釋義</th>
+                            <th>字根/字首/字尾</th>
+                            <th>英英釋義</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${sortedDb.map(w => `
+                            <tr>
+                                <td><span class="grade-badge">${w.grade}</span></td>
+                                <td><b>${w.en}</b> <button class="tts-btn" onclick="speak('${(w.en||'').replace(/'/g, "\\'")}')">🔊</button></td>
+                                <td>${w.kk} <b>${w.pos}</b></td>
+                                <td><b>${w.zh}</b></td>
+                                <td style="font-size:0.82rem; color:#444;">${w.prefix !== '無' ? '首:'+w.prefix+' ' : ''}根:${w.root} ${w.suffix !== '無' ? '尾:'+w.suffix : ''}</td>
+                                <td style="font-size:0.82rem; color:#555;">${w.def}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        return;
+    }
+
+    const item = filteredList[currentIndex];
+    if (!item) {
+        card.innerHTML = `<h3 style="text-align:center; margin-top:50px;">🔍 當前學期尚無單字。<br>請點選右上方黃色頁籤【📥 批量貼入年級字庫】貼入單字。</h3>`;
+        return;
+    }
+
+    if (currentTab === 'flashcard') {
+        card.innerHTML = `
+            <input type="text" class="search-box" id="search-input" placeholder="🔍 搜尋目前範圍單字 (英文或中文)..." oninput="filterSearch()">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="grade-badge">${item.grade}</span>
+                <span style="color:#777; font-size:0.85rem; font-weight:bold;">題號: ${currentIndex + 1} / ${filteredList.length}</span>
+            </div>
+            <div style="text-align:center; margin: 10px 0;">
+                <span style="font-size:2.4rem; font-weight:bold; color:var(--primary);">${item.en}</span>
+                <button class="tts-btn" onclick="speak('${(item.en||'').replace(/'/g, "\\'")}')">🔊</button>
+                <div style="color:#555; font-size:1.05rem; margin-top:4px;">${item.kk} ｜ <b>${item.pos}</b> <b>${item.zh}</b></div>
+            </div>
+            <div class="detail-grid">
+                <div class="detail-item"><strong>字首 (Prefix)：</strong> ${item.prefix || '無'}</div>
+                <div class="detail-item"><strong>字根 (Root)：</strong> ${item.root || '無'}</div>
+                <div class="detail-item"><strong>字尾 (Suffix)：</strong> ${item.suffix || '無'}</div>
+                <div class="detail-item"><strong>同義字：</strong> ${item.syn || '無'}</div>
+                <div class="detail-item"><strong>類義字：</strong> ${item.rel || '無'}</div>
+                <div class="detail-item"><strong>相反字：</strong> ${item.ant || '無'}</div>
+                <div class="detail-item" style="grid-column: span 3;"><strong>字族 / 派生：</strong> ${item.family || '無'}</div>
+                <div class="detail-item" style="grid-column: span 3;"><strong>英英釋義 (Cambridge)：</strong> ${item.def || '無'}</div>
+                <div class="ex-box">
+                    <strong>實用例句 1：</strong> ${item.ex1 || '無'} <button class="tts-btn" style="font-size:1rem;" onclick="speak('${(item.ex1||'').replace(/'/g, "\\'")}')">🔊</button><br>
+                    <span style="color:#555;">${item.ex1_zh || ''}</span>
+                </div>
+                <div class="ex-box">
+                    <strong>實用例句 2：</strong> ${item.ex2 || '無'} <button class="tts-btn" style="font-size:1rem;" onclick="speak('${(item.ex2||'').replace(/'/g, "\\'")}')">🔊</button><br>
+                    <span style="color:#555;">${item.ex2_zh || ''}</span>
+                </div>
+            </div>
+        `;
+        const searchInput = document.getElementById('search-input');
+        if (searchInput && window.lastSearchVal) {
+            searchInput.value = window.lastSearchVal;
+        }
+    } else if (currentTab === 'gap-sentence') {
+        // 單字填空 (句子四選一)
+        let exText = item.ex1 || `${item.en} is an important word.`;
+        let exZhText = item.ex1_zh || `【${item.zh}】是重要的基礎核心單字。`;
+
+        // 挖空單字 (忽略大小寫)
+        let cleanWord = item.en.trim();
+        let regex = new RegExp(`\\b${cleanWord}\\b`, 'gi');
+        let maskedSentence = exText.replace(regex, `<span class="sentence-blank-highlight">_______</span>`);
+        if (maskedSentence === exText) {
+            maskedSentence = exText.replace(new RegExp(cleanWord, 'gi'), `<span class="sentence-blank-highlight">_______</span>`);
+        }
+
+        // 隨機抽取 3 個干擾選項
+        let distractors = [];
+        let pool = masterDatabase.filter(w => w.en.toLowerCase() !== item.en.toLowerCase());
+        if (pool.length < 3) pool = filteredList.filter(w => w.en.toLowerCase() !== item.en.toLowerCase());
+        
+        let shuffledPool = [...pool].sort(() => 0.5 - Math.random());
+        for (let i = 0; i < Math.min(3, shuffledPool.length); i++) {
+            distractors.push(shuffledPool[i].en);
+        }
+        while (distractors.length < 3) {
+            distractors.push("practice", "healthy", "important");
+        }
+
+        currentSentenceOptions = [item.en, ...distractors].sort(() => 0.5 - Math.random());
+
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span class="grade-badge">${item.grade}</span>
+                <span style="color:#777; font-size:0.85rem; font-weight:bold;">題號: ${currentIndex + 1} / ${filteredList.length}</span>
+            </div>
+            <div class="sentence-quiz-box">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div class="sentence-prompt">
+                        📌 <b>Sentence Quiz:</b><br>${maskedSentence}
+                        <div class="sentence-zh-hint" id="sentence-zh-hint" style="display:none;">💡 中文翻譯：${exZhText}</div>
+                    </div>
+                    <button class="tts-btn" style="font-size:1.8rem; margin-left:10px;" onclick="speak('${(exText||'').replace(/'/g, "\\'")}')">🔊</button>
+                </div>
+                <div style="font-size:0.95rem; font-weight:bold; color:#475569; margin: 10px 0 5px 0; text-align:left;">
+                    👉 請選出最符合句意的正確單字：
+                </div>
+                <div class="mcq-options-grid">
+                    ${currentSentenceOptions.map(opt => `
+                        <button class="mcq-opt-btn" onclick="checkSentenceAnswer('${opt.replace(/'/g, "\\'")}', '${item.en.replace(/'/g, "\\'")}', this)">${opt}</button>
+                    `).join('')}
+                </div>
+                <div id="sentence-feedback" style="margin-top:15px; font-size:1.1rem; font-weight:bold; min-height:30px;"></div>
+            </div>
+        `;
+    } else if (currentTab === 'gap-zh' || currentTab === 'gap-en') {
+        targetWord = (item.en || '').toLowerCase();
+        setupMask(targetWord);
+
+        let promptHTML = currentTab === 'gap-zh' 
+            ? `<div style="font-size:1.4rem; font-weight:bold; color:#333;">💡 中文提示：${item.zh} <span style="font-size:1rem; color:#666;">(${item.pos})</span></div>`
+            : `<div style="font-size:1.05rem; font-weight:bold; color:#333; line-height:1.5;">📖 Cambridge Def: ${item.def}</div>`;
+
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="grade-badge">${item.grade}</span>
+                <span style="color:#777; font-size:0.85rem; font-weight:bold;">題號: ${currentIndex + 1} / ${filteredList.length}</span>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                ${promptHTML}
+                <div class="word-mask-display" id="mask-display">${renderMaskedString()}</div>
+            </div>
+            <div class="keyboard-container">
+                <div class="kb-row">
+                    ${['q','w','e','r','t','y','u','i','o','p'].map(k => `<button class="key-btn" onclick="pressKey('${k}')">${k.toUpperCase()}</button>`).join('')}
+                </div>
+                <div class="kb-row">
+                    ${['a','s','d','f','g','h','j','k','l'].map(k => `<button class="key-btn" onclick="pressKey('${k}')">${k.toUpperCase()}</button>`).join('')}
+                </div>
+                <div class="kb-row">
+                    ${['z','x','c','v','b','n','m'].map(k => `<button class="key-btn" onclick="pressKey('${k}')">${k.toUpperCase()}</button>`).join('')}
+                    <button class="key-btn btn-del" onclick="deleteKey()">⌫ 刪除</button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function checkSentenceAnswer(selected, correct, btn) {
+    const feedback = document.getElementById('sentence-feedback');
+    const zhHint = document.getElementById('sentence-zh-hint');
+    if (zhHint) zhHint.style.display = 'block';
+
+    const item = filteredList[currentIndex];
+    speak(item.ex1 || correct);
+
+    if (selected.toLowerCase() === correct.toLowerCase()) {
+        btn.classList.add('correct');
+        if (feedback) feedback.innerHTML = `<span style="color:var(--correct-color);">🎉 正確！(Correct) ｜ <b>${item.en}</b> (${item.pos}) ${item.zh}</span>`;
+    } else {
+        btn.classList.add('wrong');
+        document.querySelectorAll('.mcq-opt-btn').forEach(b => {
+            if (b.innerText.toLowerCase() === correct.toLowerCase()) {
+                b.classList.add('correct');
+            }
+        });
+        if (feedback) feedback.innerHTML = `<span style="color:var(--wrong-color);">❌ 再試一次！正確答案是：<b>${correct}</b> (${item.zh})</span>`;
+    }
+}
+
+function setupMask(word) {
+    currentInputLetters = [];
+    maskedIndices = [];
+    let cleanWord = word.replace(/[^a-z]/g, '');
+    let len = word.length;
+    let countToMask = Math.min(Math.max(1, Math.floor(cleanWord.length / 3)), 3);
+
+    while (maskedIndices.length < countToMask) {
+        let randIdx = Math.floor(Math.random() * len);
+        if (/[a-z]/.test(word[randIdx]) && !maskedIndices.includes(randIdx)) {
+            maskedIndices.push(randIdx);
+        }
+    }
+    maskedIndices.sort((a,b) => a - b);
+}
+
+function renderMaskedString() {
+    let result = "";
+    let inputIdx = 0;
+    for (let i = 0; i < targetWord.length; i++) {
+        if (maskedIndices.includes(i)) {
+            if (inputIdx < currentInputLetters.length) {
+                result += `<span style="color:var(--primary); text-decoration:underline;">${currentInputLetters[inputIdx].toUpperCase()}</span> `;
+            } else {
+                result += "_ ";
+            }
+            inputIdx++;
+        } else {
+            result += targetWord[i].toUpperCase() + " ";
+        }
+    }
+    return result;
+}
+
+function pressKey(char) {
+    if (currentInputLetters.length < maskedIndices.length) {
+        currentInputLetters.push(char);
+        const displayElem = document.getElementById('mask-display');
+        if(displayElem) displayElem.innerHTML = renderMaskedString();
+
+        if (currentInputLetters.length === maskedIndices.length) {
+            checkAnswer();
+        }
+    }
+}
+
+function deleteKey() {
+    if (currentInputLetters.length > 0) {
+        currentInputLetters.pop();
+        const displayElem = document.getElementById('mask-display');
+        if(displayElem) displayElem.innerHTML = renderMaskedString();
+    }
+}
+
+function checkAnswer() {
+    let userWord = "";
+    let inputIdx = 0;
+    for (let i = 0; i < targetWord.length; i++) {
+        if (maskedIndices.includes(i)) {
+            userWord += currentInputLetters[inputIdx];
+            inputIdx++;
+        } else {
+            userWord += targetWord[i];
+        }
+    }
+
+    const displayElem = document.getElementById('mask-display');
+    if (userWord.toLowerCase() === targetWord.toLowerCase()) {
+        speak(targetWord);
+        if(displayElem) displayElem.innerHTML = `<span style="color:var(--correct-color);">${targetWord.toUpperCase()} ✅ (正確！)</span>`;
+    } else {
+        if(displayElem) displayElem.innerHTML = `<span style="color:var(--wrong-color);">${renderMaskedString()} ❌ (再試一次)</span>`;
+    }
+}
+
+function showHint() {
+    const item = filteredList[currentIndex];
+    if (!item) return;
+    speak(item.en);
+    if (currentTab === 'gap-sentence') {
+        const zhHint = document.getElementById('sentence-zh-hint');
+        if (zhHint) zhHint.style.display = 'block';
+        document.querySelectorAll('.mcq-opt-btn').forEach(b => {
+            if (b.innerText.toLowerCase() === item.en.toLowerCase()) {
+                b.classList.add('correct');
+            }
+        });
+        const feedback = document.getElementById('sentence-feedback');
+        if (feedback) feedback.innerHTML = `<span style="color:var(--correct-color);">💡 正確解答：<b>${item.en}</b> (${item.zh})</span>`;
+    } else if (currentTab === 'gap-zh' || currentTab === 'gap-en') {
+        const displayElem = document.getElementById('mask-display');
+        if(displayElem) displayElem.innerHTML = `<span style="color:var(--correct-color);">${item.en.toUpperCase()}</span> (${item.zh})`;
+    } else {
+        alert(`💡 【${item.en}】\n音標：${item.kk}\n字根：${item.root}\n釋義：${item.zh}\n例句：${item.ex1}`);
+    }
+}
+
+function filterSearch() {
+    const searchInput = document.getElementById('search-input');
+    if (!searchInput) return;
+    const val = searchInput.value.toLowerCase().trim();
+    window.lastSearchVal = val;
+    
+    const grade = document.getElementById('grade-filter').value;
+    let baseList = grade === 'ALL' ? masterDatabase : masterDatabase.filter(item => item.grade === grade);
+
+    filteredList = baseList.filter(item => 
+        (item.en || '').toLowerCase().includes(val) || (item.zh || '').includes(val)
+    );
+    currentIndex = 0;
+    renderTab();
+}
+
+function prevCard() {
+    if (currentIndex > 0) {
+        currentIndex--;
+        renderTab();
+    }
+}
+
+function nextCard() {
+    if (currentIndex < filteredList.length - 1) {
+        currentIndex++;
+        renderTab();
+    } else {
+        alert("🎉 已到達當前題庫最後一題！");
+    }
+}
+</script>
+
+</body>
+</html>
