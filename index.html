@@ -43,12 +43,18 @@
             border-bottom: 3px solid var(--primary-light);
             padding-bottom: 12px;
             margin-bottom: 15px;
+            user-select: none;
         }
 
         h1 {
             color: var(--primary);
             margin: 0 0 5px 0;
             font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        h1:hover {
+            color: var(--primary-light);
         }
 
         .global-status {
@@ -254,7 +260,6 @@
             border-color: #d62828;
         }
 
-        /* 句子選擇題 UI */
         .sentence-quiz-box {
             text-align: center;
             padding: 10px 0;
@@ -413,7 +418,7 @@
 
 <div class="container">
     <header>
-        <h1>全民英檢初級 (GEPT) 年級單字全方位特訓</h1>
+        <h1 onclick="unlockAdmin()" title="💡 連點標題三下可開啟/關閉教師管理面板">全民英檢初級 (GEPT) 年級單字全方位特訓</h1>
         <div class="global-status">
             📚 全局字庫：<span id="master-count">0</span> 字 ｜ 🎯 當前學期 (<b><span id="current-range-name">全部學期</span></b>)：<span id="loaded-words-count">0</span> 字
         </div>
@@ -446,7 +451,7 @@
         <button class="tab-btn" id="tab-btn-gap-zh" onclick="switchTab('gap-zh')">✍️ 單字填空 (中文提示)</button>
         <button class="tab-btn" id="tab-btn-gap-en" onclick="switchTab('gap-en')">📖 單字填空 (英英釋義)</button>
         <button class="tab-btn" id="tab-btn-overview" onclick="switchTab('overview')">📋 單字總覽 (匯出Excel)</button>
-        <button class="tab-btn btn-import-tab" id="tab-btn-import" onclick="switchTab('import')">📥 批量貼入年級字庫</button>
+        <button class="tab-btn btn-import-tab" id="tab-btn-import" style="display:none;" onclick="switchTab('import')">📥 批量貼入年級字庫 (教師暗門)</button>
     </div>
 
     <div class="main-card" id="card-content"></div>
@@ -461,6 +466,26 @@
 </div>
 
 <script>
+// 內建完整資料庫（支援離線、換裝置免複製貼上）
+const BUILTIN_DATABASE = [
+    {en:"family", kk:"[ˈfæməlɪ]", pos:"n.", zh:"家人；家庭", grade:"國一上", def:"A group of people who are related to each other.", prefix:"無", root:"fam (家庭)", suffix:"-ily (名詞)", syn:"household", rel:"relative", ant:"stranger", family:"familiar", ex1:"I love my family very much.", ex1_zh:"我非常愛我的家人。", ex2:"She has a big family with three children.", ex2_zh:"她有一個包含三個小孩的大家庭。"},
+    {en:"father", kk:"[ˈfɑðɚ]", pos:"n.", zh:"父親；爸爸", grade:"國一上", def:"A male parent of a child.", prefix:"無", root:"faeder (父親)", suffix:"-er (人稱)", syn:"dad", rel:"parent", ant:"mother", family:"fatherly", ex1:"My father works as an engineer.", ex1_zh:"我的父親擔任工程師。", ex2:"His father taught him how to play baseball.", ex2_zh:"他的父親教他如何打棒球。"},
+    {en:"mother", kk:"[ˈmʌðɚ]", pos:"n.", zh:"母親；媽媽", grade:"國一上", def:"A female parent of a child.", prefix:"無", root:"modor (母親)", suffix:"-er (人稱)", syn:"mom", rel:"parent", ant:"father", family:"motherly", ex1:"Her mother is an English teacher.", ex1_zh:"她的母親是一位英文老師。", ex2:"Mom cooks delicious breakfast every morning.", ex2_zh:"媽媽每天早晨烹煮美味的早餐。"},
+    {en:"student", kk:"[ˈstjudnt]", pos:"n.", zh:"學生；學者", grade:"國一上", def:"A person who is studying at school.", prefix:"無", root:"stud (專注/致力)", suffix:"-ent (人稱)", syn:"pupil", rel:"learner", ant:"teacher", family:"study", ex1:"Oliver is an active student in class.", ex1_zh:"Oliver 在課堂上是一位積極的學生。", ex2:"The teacher answered every student's question.", ex2_zh:"老師回答了每位學生的提問。"},
+    {en:"teacher", kk:"[ˈtitʃɚ]", pos:"n.", zh:"老師；教師", grade:"國一上", def:"A person who teaches in a school.", prefix:"無", root:"taecan (指示/展示)", suffix:"-er (人稱)", syn:"instructor", rel:"educator", ant:"student", family:"teach", ex1:"Our English teacher explains grammar clearly.", ex1_zh:"我們的英文老師將文法解釋得非常清楚。", ex2:"Mr. Lin is a patient and kind teacher.", ex2_zh:"林老師是一位既有耐心又親切的教師。"},
+    {en:"classmate", kk:"[ˈklæsˌmet]", pos:"n.", zh:"同班同學", grade:"國一上", def:"A member of the same class in a school.", prefix:"class", root:"mate (夥伴)", suffix:"無", syn:"peer", rel:"schoolmate", ant:"stranger", family:"class", ex1:"He gets along well with all his classmates.", ex1_zh:"他和所有的同班同學都相處得很好。", ex2:"My classmate helped me solve the math problem.", ex2_zh:"我的同學幫我解開了那道數學題。"},
+    {en:"active", kk:"[ˈæktɪv]", pos:"adj.", zh:"活躍的；積極主動的", grade:"國一下", def:"Engaging in energetic work or action.", prefix:"無", root:"act (行動)", suffix:"-ive (形容詞)", syn:"energetic", rel:"lively", ant:"passive", family:"activity", ex1:"Oliver is an active basketball player.", ex1_zh:"Oliver 是一位活躍的籃球員。", ex2:"Stay active to keep your body fit.", ex2_zh:"保持活躍以維持身體健康。"},
+    {en:"convenient", kk:"[kənˈvinjənt]", pos:"adj.", zh:"便利的；方便的", grade:"國一下", def:"Fitting in well with needs or plans.", prefix:"con-", root:"ven (相聚/來到)", suffix:"-ient (形容詞)", syn:"handy", rel:"useful", ant:"inconvenient", family:"convenience", ex1:"Taking the MRT is fast and convenient.", ex1_zh:"搭乘捷運既快速又便利。", ex2:"Let's meet at a convenient time for you.", ex2_zh:"我們約在對你方便的時間見面吧。"},
+    {en:"accident", kk:"[ˈæksədənt]", pos:"n.", zh:"意外事故；車禍", grade:"國二上", def:"An unfortunate incident happening unexpectedly.", prefix:"ad-", root:"cid (落下/發生)", suffix:"-ent (名詞)", syn:"mishap", rel:"collision", ant:"plan", family:"accidental", ex1:"He was injured in a car accident.", ex1_zh:"他在一場車禍中受了傷。", ex2:"Wear a helmet to prevent injury from an accident.", ex2_zh:"騎車配戴安全帽能有效預防意外帶來的傷害。"},
+    {en:"admire", kk:"[ədˈmaɪr]", pos:"v.", zh:"欽佩；讚賞；欣賞", grade:"國二上", def:"Regard with respect or warm approval.", prefix:"ad-", root:"mir (驚奇/奇蹟)", suffix:"-e", syn:"respect", rel:"appreciate", ant:"despise", family:"admiration", ex1:"Students admire the teacher for his patience.", ex1_zh:"全班學生都非常欽佩讚賞老師對大家的無比耐心。", ex2:"We stopped by the lake to admire the sunset.", ex2_zh:"我們駐足在湖畔邊靜靜欣賞美麗的落日夕陽。"},
+    {en:"achieve", kk:"[əˈtʃiv]", pos:"v.", zh:"實現；達成；贏得", grade:"國二下", def:"Successfully bring about or reach by effort.", prefix:"ad-", root:"chief (頂點/首領)", suffix:"-e", syn:"accomplish", rel:"attain", ant:"fail", family:"achievement", ex1:"Oliver worked hard to achieve his study goals.", ex1_zh:"Oliver 努力用功以達成他的學業目標。", ex2:"She achieved great success in the speech contest.", ex2_zh:"她在英語演講比賽中取得了巨大的成功。"},
+    {en:"capable", kk:"[ˈkepəbl]", pos:"adj.", zh:"有能力的；能幹的", grade:"國二下", def:"Having the ability or quality to do something.", prefix:"無", root:"cap (抓取/掌握)", suffix:"-able", syn:"competent", rel:"skillful", ant:"incapable", family:"capability", ex1:"She is capable of speaking three foreign languages.", ex1_zh:"她有能力說三種不同的外國語言。", ex2:"Oliver is a capable leader for the science team.", ex2_zh:"Oliver 是科學小組非常能幹的隊長。"},
+    {en:"advance", kk:"[ədˈvæns]", pos:"v./n.", zh:"前進；推進；進步", grade:"國三上", def:"Move forward in a purposeful way; progress.", prefix:"ad-", root:"van (前方)", suffix:"-ce", syn:"progress", rel:"proceed", ant:"retreat", family:"advanced", ex1:"Technology continues to advance rapidly.", ex1_zh:"現代科技正持續以極快的速度向前邁進發展。", ex2:"Students made great advances in English writing.", ex2_zh:"學生們在英語寫作方面取得了巨大的進步。"},
+    {en:"appreciate", kk:"[əˈpriʃɪˌet]", pos:"v.", zh:"感激；欣賞；賞識", grade:"國三上", def:"Recognize the full worth of; be grateful.", prefix:"ad-", root:"prec (價值)", suffix:"-ate", syn:"thank", rel:"admire", ant:"despise", family:"appreciation", ex1:"I appreciate your kind guidance on my essay.", ex1_zh:"我很感激你在我英文作文上的悉心指導。", ex2:"Students learn to appreciate world music in class.", ex2_zh:"學生們在課堂上學習欣賞多元的世界音樂。"},
+    {en:"cooperate", kk:"[koˈɑpəˌret]", pos:"v.", zh:"合作；協同工作；配合", grade:"國三下", def:"Work jointly toward the same end.", prefix:"co-", root:"oper (工作/勞動)", suffix:"-ate", syn:"collaborate", rel:"team up", ant:"compete", family:"cooperation", ex1:"Students must cooperate to complete the project.", ex1_zh:"小組成員之間必須通力合作才能圓滿完成專案。", ex2:"Please cooperate with library staff and keep quiet.", ex2_zh:"在館內閱讀時請務必主動配合工作人員保持安靜。"},
+    {en:"discipline", kk:"[ˈdɪsəplɪn]", pos:"n./v.", zh:"紀律；自律；訓練", grade:"國三下", def:"The practice of training people to obey rules.", prefix:"無", root:"discip (求知門徒)", suffix:"-ine", syn:"self-control", rel:"order", ant:"chaos", family:"disciplined", ex1:"Good study discipline leads to great results.", ex1_zh:"優良嚴謹的學習自律習慣能為學生帶來極為出色的成績。", ex2:"Parents teach children daily discipline.", ex2_zh:"父母在日常生活中悉心教導孩子生活規律與規矩。"}
+];
+
 let masterDatabase = [];
 let currentTab = 'flashcard';
 let currentIndex = 0;
@@ -470,6 +495,7 @@ let targetWord = "";
 let maskedIndices = [];
 let bestVoice = null;
 let currentSentenceOptions = [];
+let adminClickCounter = 0;
 
 function initVoiceEngine() {
     if ('speechSynthesis' in window) {
@@ -513,9 +539,12 @@ function loadFromStorage() {
             const parsed = JSON.parse(saved);
             if (Array.isArray(parsed) && parsed.length > 0) {
                 masterDatabase = parsed;
+                return;
             }
         }
     } catch(e) {}
+    // 無本機快取時，自動載入內建基礎字庫
+    masterDatabase = [...BUILTIN_DATABASE];
 }
 
 function onGradeFilterChange() {
@@ -541,6 +570,23 @@ window.onload = function() {
     onGradeFilterChange();
 };
 
+function unlockAdmin() {
+    adminClickCounter++;
+    if (adminClickCounter >= 3) {
+        const btn = document.getElementById('tab-btn-import');
+        if (btn) {
+            if (btn.style.display === 'none') {
+                btn.style.display = 'inline-block';
+                alert("🔑 教師專屬管理模式已開啟！【📥 批量貼入年級字庫】頁籤已解除隱藏。");
+            } else {
+                btn.style.display = 'none';
+                alert("🔒 教師管理模式已隱藏，恢復純淨學生練習介面。");
+            }
+        }
+        adminClickCounter = 0;
+    }
+}
+
 function switchTab(tabName) {
     currentTab = tabName;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -558,6 +604,7 @@ function switchTab(tabName) {
     renderTab();
 }
 
+// 萬用 17 欄位 TSV 直貼解析（含自動去重與覆蓋更新機制）
 function processBatchImport() {
     const text = document.getElementById('import-textarea').value.trim();
     if (!text) {
@@ -567,7 +614,6 @@ function processBatchImport() {
 
     let appendMode = confirm("👉 點擊【確定】將這些單字【累加】到現有字庫中（系統將自動過濾重複單字）\n👉 點擊【取消】將【完全覆蓋】現有字庫");
     
-    // 建立 Map 用於快速比對去重 (key: 英文小寫, value: 單字物件)
     let wordMap = new Map();
     if (appendMode) {
         masterDatabase.forEach(item => {
@@ -608,10 +654,10 @@ function processBatchImport() {
             };
 
             if (wordMap.has(key)) {
-                wordMap.set(key, wordObj); // 更新為最新資料
+                wordMap.set(key, wordObj);
                 duplicateCount++;
             } else {
-                wordMap.set(key, wordObj); // 新增單字
+                wordMap.set(key, wordObj);
                 addedCount++;
             }
         }
@@ -635,7 +681,17 @@ function clearAllVocab() {
         localStorage.removeItem('GEPT_MASTER_DATA');
         document.getElementById('master-count').innerText = 0;
         onGradeFilterChange();
-        alert("🧹 已清空字庫。");
+        alert("🧹 已清空本機暫存字庫。");
+    }
+}
+
+function resetToBuiltin() {
+    if (confirm("🔄 確定要將字庫還原回預設內建資料嗎？")) {
+        masterDatabase = [...BUILTIN_DATABASE];
+        saveToStorage();
+        document.getElementById('master-count').innerText = masterDatabase.length;
+        onGradeFilterChange();
+        alert(`✅ 已成功還原！目前字庫共有 ${masterDatabase.length} 字。`);
     }
 }
 
@@ -695,12 +751,13 @@ function renderTab() {
 
     if (currentTab === 'import') {
         card.innerHTML = `
-            <h3 style="margin-top:0; color:var(--primary);">📥 批量貼入年級字庫面板</h3>
+            <h3 style="margin-top:0; color:var(--primary);">📥 教師專用管理面板 (批量貼入字庫)</h3>
             <p style="font-size:0.88rem; color:#555; margin-bottom:8px;">
-                💡 <b>使用說明</b>：直接全選複製 17 欄位的 Tab 分隔單字表，貼入下方並點擊按鈕即可匯入（可按年級分批累加貼入）。
+                💡 <b>使用說明</b>：直接全選複製 17 欄位的 Tab 分隔單字表，貼入下方並點擊按鈕即可匯入（系統內建自動去重，重複貼入不會灌水）。
             </p>
             <textarea class="import-box" id="import-textarea" placeholder="請在此貼上單字表內容..."></textarea>
             <div class="import-btn-group">
+                <button class="action-btn" style="background:#0284c7; color:#fff;" onclick="resetToBuiltin()">🔄 還原內建字庫</button>
                 <button class="action-btn btn-danger" onclick="clearAllVocab()">🗑️ 清空所有字庫</button>
                 <button class="action-btn btn-success" onclick="processBatchImport()">🚀 一鍵智能載入字庫</button>
             </div>
@@ -747,7 +804,7 @@ function renderTab() {
 
     const item = filteredList[currentIndex];
     if (!item) {
-        card.innerHTML = `<h3 style="text-align:center; margin-top:50px;">🔍 當前學期尚無單字。<br>請點選右上方黃色頁籤【📥 批量貼入年級字庫】貼入單字。</h3>`;
+        card.innerHTML = `<h3 style="text-align:center; margin-top:50px;">🔍 當前學期尚無單字。<br>請點選大標題三下開啟管理面板匯入單字。</h3>`;
         return;
     }
 
@@ -787,11 +844,9 @@ function renderTab() {
             searchInput.value = window.lastSearchVal;
         }
     } else if (currentTab === 'gap-sentence') {
-        // 單字填空 (句子四選一)
         let exText = item.ex1 || `${item.en} is an important word.`;
         let exZhText = item.ex1_zh || `【${item.zh}】是重要的基礎核心單字。`;
 
-        // 挖空單字 (忽略大小寫)
         let cleanWord = item.en.trim();
         let regex = new RegExp(`\\b${cleanWord}\\b`, 'gi');
         let maskedSentence = exText.replace(regex, `<span class="sentence-blank-highlight">_______</span>`);
@@ -799,7 +854,6 @@ function renderTab() {
             maskedSentence = exText.replace(new RegExp(cleanWord, 'gi'), `<span class="sentence-blank-highlight">_______</span>`);
         }
 
-        // 隨機抽取 3 個干擾選項
         let distractors = [];
         let pool = masterDatabase.filter(w => w.en.toLowerCase() !== item.en.toLowerCase());
         if (pool.length < 3) pool = filteredList.filter(w => w.en.toLowerCase() !== item.en.toLowerCase());
