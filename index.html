@@ -532,19 +532,42 @@ function saveToStorage() {
     } catch(e) {}
 }
 
-function loadFromStorage() {
+async function loadFromStorage() {
+    // 1. 優先嘗試從 GitHub 遠端同步完整字庫
+    try {
+        const response = await fetch('./words.json?v=' + Date.now());
+        if (response.ok) {
+            const remoteData = await response.json();
+            if (Array.isArray(remoteData) && remoteData.length > 0) {
+                masterDatabase = remoteData;
+                saveToStorage();
+                document.getElementById('master-count').innerText = masterDatabase.length;
+                onGradeFilterChange();
+                return;
+            }
+        }
+    } catch (e) {
+        console.log("遠端讀取略過，切換至本機快取");
+    }
+
+    // 2. 若離線或無網路，讀取該裝置的本機快取
     try {
         const saved = localStorage.getItem('GEPT_MASTER_DATA');
         if (saved) {
             const parsed = JSON.parse(saved);
             if (Array.isArray(parsed) && parsed.length > 0) {
                 masterDatabase = parsed;
+                document.getElementById('master-count').innerText = masterDatabase.length;
+                onGradeFilterChange();
                 return;
             }
         }
     } catch(e) {}
-    // 無本機快取時，自動載入內建基礎字庫
-    masterDatabase = [...BUILTIN_DATABASE];
+
+    // 3. 預設備用字庫
+    masterDatabase = typeof BUILTIN_DATABASE !== 'undefined' ? [...BUILTIN_DATABASE] : [];
+    document.getElementById('master-count').innerText = masterDatabase.length;
+    onGradeFilterChange();
 }
 
 function onGradeFilterChange() {
