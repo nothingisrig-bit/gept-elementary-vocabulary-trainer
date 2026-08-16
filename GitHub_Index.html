@@ -26,6 +26,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        <script src="words.js"></script>
         }
 
         .container {
@@ -533,41 +534,62 @@ function saveToStorage() {
 }
 
 async function loadFromStorage() {
-    // 1. 優先嘗試從 GitHub 遠端同步完整字庫
-    try {
-        const response = await fetch('./words.json?v=' + Date.now());
-        if (response.ok) {
-            const remoteData = await response.json();
-            if (Array.isArray(remoteData) && remoteData.length > 0) {
-                masterDatabase = remoteData;
-                saveToStorage();
-                document.getElementById('master-count').innerText = masterDatabase.length;
-                onGradeFilterChange();
-                return;
-            }
+   function parseRawData(text) {
+    if (!text || text.trim().length === 0) return [];
+    let wordMap = new Map();
+    const lines = text.trim().split('\n');
+    lines.forEach(line => {
+        let r = line.split('\t');
+        if (r.length < 2) r = line.split(',');
+        let en = (r[0] || '').trim();
+        if (en && en !== '英文單字') {
+            wordMap.set(en.toLowerCase(), {
+                en: en,
+                kk: (r[1] || '').trim(),
+                pos: (r[2] || '').trim(),
+                zh: (r[3] || '').trim(),
+                grade: (r[4] || '國一上').trim(),
+                def: (r[5] || '').trim(),
+                prefix: (r[6] || '無').trim(),
+                root: (r[7] || '無').trim(),
+                suffix: (r[8] || '無').trim(),
+                syn: (r[9] || '無').trim(),
+                rel: (r[10] || '無').trim(),
+                ant: (r[11] || '無').trim(),
+                family: (r[12] || '無').trim(),
+                ex1: (r[13] || '').trim(),
+                ex1_zh: (r[14] || '').trim(),
+                ex2: (r[15] || '').trim(),
+                ex2_zh: (r[16] || '').trim(),
+                syllables: en
+            });
         }
-    } catch (e) {
-        console.log("遠端讀取略過，切換至本機快取");
+    });
+    return Array.from(wordMap.values());
+}
+
+function loadFromStorage() {
+    // 1. 優先載入 words.js 提供的全域字庫
+    if (window.RAW_GEPT_TEXT && window.RAW_GEPT_TEXT.trim().length > 50) {
+        masterDatabase = parseRawData(window.RAW_GEPT_TEXT);
+        saveToStorage();
+        return;
     }
 
-    // 2. 若離線或無網路，讀取該裝置的本機快取
+    // 2. 次選本機暫存
     try {
         const saved = localStorage.getItem('GEPT_MASTER_DATA');
         if (saved) {
             const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed) && parsed.length > 0) {
+            if (Array.isArray(parsed) && parsed.length > 50) {
                 masterDatabase = parsed;
-                document.getElementById('master-count').innerText = masterDatabase.length;
-                onGradeFilterChange();
                 return;
             }
         }
     } catch(e) {}
 
-    // 3. 預設備用字庫
+    // 3. 備用資料
     masterDatabase = typeof BUILTIN_DATABASE !== 'undefined' ? [...BUILTIN_DATABASE] : [];
-    document.getElementById('master-count').innerText = masterDatabase.length;
-    onGradeFilterChange();
 }
 
 function onGradeFilterChange() {
